@@ -19,7 +19,23 @@ import (
 	"k8s.io/apimachinery/pkg/watch"
 
 	"github.com/DataDog/datadog-agent/pkg/util/log"
+	"github.com/prometheus/client_golang/prometheus"
 )
+
+var (
+	eventDistribution = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:    "event_timestamp",
+			Help:    "Distribution of event timestamps",
+			Buckets: []float64{-3600, -1800, -900, -600, -300, -150, -120, -60, -30, -15, -5, 5, 15, 30, 60, 120, 150, 300, 600, 3600},
+		},
+		[]string{"type"},
+	)
+)
+
+func init() {
+	prometheus.MustRegister(eventDistribution)
+}
 
 // RunEventCollection will return the most recent events emitted by the apiserver.
 func (c *APIClient) RunEventCollection(resVer string, lastListTime time.Time, eventReadTimeout int64, eventCardinalityLimit int64, resync int64, filter string) ([]*v1.Event, string, time.Time, error) {
@@ -109,6 +125,7 @@ func (c *APIClient) RunEventCollection(resVer string, lastListTime time.Time, ev
 				resVer = ev.ResourceVersion
 			}
 
+			eventDistribution.WithLabelValues(ev.InvolvedObject.Kind).Observe(float64(time.Now().Unix() - ev.LastTimestamp.Unix()))
 		case <-timeoutParse.C:
 			log.Debugf("Collected %d events, will resume watching from resource version %s", len(added), resVer)
 			// No more events to read or the watch lasted more than `eventReadTimeout`.
@@ -128,6 +145,7 @@ func diffEvents(latestStoredRV int, fullList []*v1.Event) []*v1.Event {
 		}
 		if erv > latestStoredRV {
 			diffEvents = append(diffEvents, ev)
+			eventDistribution.WithLabelValues(ev.InvolvedObject.Kind).Observe(float64(time.Now().Unix() - ev.LastTimestamp.Unix()))
 		}
 	}
 	log.Debugf("Returning %d events that we have not collected", len(diffEvents))
