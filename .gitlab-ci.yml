@@ -1486,6 +1486,7 @@ testkitchen_cleanup_azure-a7:
 # build agent6 py2 image
 build_agent6:
   <<: *docker_build_job_definition
+  needs: ["agent_deb-x64-a6"]
   <<: *skip_when_unwanted_on_6
   variables:
     IMAGE: &agent_ecr 486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent/agent
@@ -1497,6 +1498,7 @@ build_agent6:
 # build agent6 py2 jmx image
 build_agent6_jmx:
   <<: *docker_build_job_definition
+  needs: ["agent_deb-x64-a6"]
   <<: *skip_when_unwanted_on_6
   variables:
     IMAGE: &agent_ecr 486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent/agent
@@ -1509,6 +1511,7 @@ build_agent6_jmx:
 # build agent6 py3 image
 build_agent6_py3:
   <<: *docker_build_job_definition
+  needs: ["agent_deb-x64-a6"]
   <<: *skip_when_unwanted_on_6
   variables:
     IMAGE: &agent_ecr 486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent/agent
@@ -1520,6 +1523,7 @@ build_agent6_py3:
 # build agent6 py3 jmx image
 build_agent6_py3_jmx:
   <<: *docker_build_job_definition
+  needs: ["agent_deb-x64-a6"]
   <<: *skip_when_unwanted_on_6
   variables:
     IMAGE: &agent_ecr 486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent/agent
@@ -1533,6 +1537,7 @@ build_agent6_py3_jmx:
 # build agent6 jmx unified image (including python3)
 build_agent6_py2py3_jmx:
   <<: *docker_build_job_definition
+  needs: ["agent_deb-x64-a6"]
   <<: *skip_when_unwanted_on_6
   variables:
     IMAGE: &agent_ecr 486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent/agent
@@ -1544,6 +1549,7 @@ build_agent6_py2py3_jmx:
 # build agent7 image
 build_agent7:
   <<: *docker_build_job_definition
+  needs: ["agent_deb-x64-a7"]
   <<: *skip_when_unwanted_on_7
   variables:
     IMAGE: &agent_ecr 486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent/agent
@@ -1555,6 +1561,7 @@ build_agent7:
 # build agent7 jmx image
 build_agent7_jmx:
   <<: *docker_build_job_definition
+  needs: ["agent_deb-x64-a7"]
   <<: *skip_when_unwanted_on_7
   variables:
     IMAGE: &agent_ecr 486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent/agent
