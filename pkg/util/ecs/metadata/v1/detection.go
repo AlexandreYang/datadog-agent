@@ -46,6 +46,8 @@ func detectAgentURL() (string, error) {
 		if gw != nil {
 			urls = append(urls, fmt.Sprintf("http://%s:%d/", gw.String(), defaultAgentPort))
 		}
+
+		urls = append(urls, fmt.Sprintf("http://169.254.172.1:%d/", defaultAgentPort))
 	}
 
 	// Always try the localhost URL.
