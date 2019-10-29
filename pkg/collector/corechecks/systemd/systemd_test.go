@@ -236,7 +236,7 @@ func TestDbusConnectionErr(t *testing.T) {
 
 func TestSystemStateCallErr(t *testing.T) {
 	stats := &mockSystemdStats{}
-	stats.On("PrivateSocketConnection", mock.Anything).Return(&dbus.Conn{}, nil)
+	stats.On("SystemBusSocketConnection").Return(&dbus.Conn{}, nil)
 	stats.On("SystemState", mock.Anything).Return((*dbus.Property)(nil), fmt.Errorf("some error"))
 
 	check := SystemdCheck{stats: stats}
@@ -534,7 +534,7 @@ func TestServiceCheckSystemStateAndCanConnect(t *testing.T) {
 	for _, d := range data {
 		t.Run(fmt.Sprintf("state %s should be mapped to %s", d.systemStatus, d.expectedServiceCheckStatus.String()), func(t *testing.T) {
 			stats := &mockSystemdStats{}
-			stats.On("PrivateSocketConnection", mock.Anything).Return(&dbus.Conn{}, nil)
+			stats.On("SystemBusSocketConnection").Return(&dbus.Conn{}, nil)
 			stats.On("SystemState", mock.Anything).Return(&dbus.Property{Name: "SystemState", Value: godbus.MakeVariant(d.systemStatus)}, nil)
 			stats.On("ListUnits", mock.Anything).Return([]dbus.UnitStatus{}, nil)
 
