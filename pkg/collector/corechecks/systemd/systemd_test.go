@@ -138,6 +138,7 @@ private_socket: /tmp/foo/private_socket
 
 func TestDefaultPrivateSocketConnection(t *testing.T) {
 	stats := &mockSystemdStats{}
+	stats.On("SystemBusSocketConnection").Return((*dbus.Conn)(nil), fmt.Errorf("some error"))
 	stats.On("PrivateSocketConnection", mock.Anything).Return(&dbus.Conn{}, nil)
 
 	rawInstanceConfig := []byte(`
@@ -150,13 +151,12 @@ unit_names:
 
 	assert.Nil(t, err)
 	assert.NotNil(t, conn)
+	stats.AssertCalled(t, "SystemBusSocketConnection")
 	stats.AssertCalled(t, "PrivateSocketConnection", "/run/systemd/private")
-	stats.AssertNotCalled(t, "SystemBusSocketConnection")
 }
 
 func TestDefaultSystemBusSocketConnection(t *testing.T) {
 	stats := &mockSystemdStats{}
-	stats.On("PrivateSocketConnection", mock.Anything).Return((*dbus.Conn)(nil), fmt.Errorf("some error"))
 	stats.On("SystemBusSocketConnection").Return(&dbus.Conn{}, nil)
 
 	rawInstanceConfig := []byte(`
@@ -169,8 +169,8 @@ unit_names:
 
 	assert.Nil(t, err)
 	assert.NotNil(t, conn)
-	stats.AssertCalled(t, "PrivateSocketConnection", "/run/systemd/private")
 	stats.AssertCalled(t, "SystemBusSocketConnection")
+	stats.AssertNotCalled(t, "PrivateSocketConnection", "/run/systemd/private")
 }
 
 func TestDefaultDockerAgentPrivateSocketConnection(t *testing.T) {
